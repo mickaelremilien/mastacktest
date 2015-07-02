@@ -1,47 +1,50 @@
-        
-sts: local
+
+- hosts: local
   user: cloud
-  sudo: yes
+  sudo: true
 
   tasks:
-    - name: apt cache is up-to-date
-      apt:
-        update_cache=yes
-        cache_valid_time=1
-
-    - name: system is up-to-date
+    - name: apt-get update & upgrade
       apt:
         upgrade=full
+        update_cache=yes
+        cache_valid_time=3600
 
     - name: packages installed
       apt:
-        pkg="{{ item }}"
+        pkg={{ item }}
         state=present
       with_items:
         - apache2
         - php5
-      notify: start apache2
-      
-    - git: repo=https://github.com/aurelienmaury/cw-bundle-lamp.git
-       dest=/var/www/html
+        - libapache2-mod-php5
 
-    - name: common aliases
+    - name: apache running
+      service:
+        name=apache2
+        state=running
+        enabled=yes
+
+    - name: apache site configuration
       copy:
-        dest=/etc/profile.d/aliases.sh
-        content="alias ll=\"ls -aul\""
+        src=files/cw.apache2.conf
+        dest=/etc/apache2/sites-available/default-cw.conf
         owner=root
         group=root
         mode=0644
+      notify: enable apache site
 
-    - name: default sh is bash
-      file:
-        src=/bin/bash
-        dest=/bin/sh
-        state=link
-
+    - name: deploy
+      git:
+        repo=https://github.com/aurelienmaury/cw-bundle-lamp.git
+        dest=/var/www/cw
+      
   handlers:
-    - name: start apache2
+    - name: enable apache site
+      shell: /usr/sbin/a2dissite 000-default && /usr/sbin/a2ensite default-cw
+      notify: restart apache
+      
+    - name: restart apache
       service:
         name=apache2
         state=restarted
-        enabled=yes
