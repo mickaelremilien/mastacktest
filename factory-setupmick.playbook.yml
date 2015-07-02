@@ -20,7 +20,7 @@
       with_items:
         - php5
         - apache2
-      notify: start apache2
+      notify: start apache
 
     - name: common aliases
       copy:
@@ -37,9 +37,9 @@
         state=link
 
   handlers:
-    - name: start apache2
+    - name: start apache
       service:
-        name=apache2
+        name=apache
         state=restarted
         enabled=yes
         
