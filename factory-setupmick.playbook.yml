@@ -1,9 +1,9 @@
-- hosts: local
+        
+sts: local
   user: cloud
   sudo: yes
 
   tasks:
-
     - name: apt cache is up-to-date
       apt:
         update_cache=yes
@@ -18,9 +18,12 @@
         pkg="{{ item }}"
         state=present
       with_items:
-        - php5
         - apache2
-      notify: start apache
+        - php5
+      notify: start apache2
+      
+    - git: repo=https://github.com/aurelienmaury/cw-bundle-lamp.git
+       dest=/var/www/html
 
     - name: common aliases
       copy:
@@ -37,9 +40,8 @@
         state=link
 
   handlers:
-    - name: start apache
+    - name: start apache2
       service:
-        name=apache
+        name=apache2
         state=restarted
         enabled=yes
-        
