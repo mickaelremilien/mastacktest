@@ -58,7 +58,8 @@ resources:
             pip install ansible
             apt-get install chkconfig -y
             git clone https://github.com/mickaelremilien/mastacktest.git
-            ansible-playbook /home/mickael/HANDSON/mastacktest/factory-setupmick.playbook.yml
+            cd /home
+            ansible-playbook /home/mastacktest/factory-setupmick.playbook.yml
   factory_internet_surface:
     type: OS::Nova::FloatingIPAssociation
     properties:
