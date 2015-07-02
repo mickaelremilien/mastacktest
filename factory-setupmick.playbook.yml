@@ -21,7 +21,6 @@
         - php5
         - apache2
       notify: start apache2
-      notify: start php5 
 
     - name: common aliases
       copy:
@@ -37,17 +36,6 @@
         dest=/bin/sh
         state=link
 
-    - name: pip packages installed
-      apt:
-        name="{{ item }}"
-      with_items:
-        - python-glanceclient
-        - python-novaclient
-        - python-neutronclient
-        - python-heatclient
-        - python-openstackclient
-        - python-cinderclient
-
   handlers:
     - name: start apache2
       service:
@@ -55,8 +43,3 @@
         state=restarted
         enabled=yes
         
-    - name: start php5
-      service: start php5
-        name=apache2
-        state=restarted 
-        enabled=yes
